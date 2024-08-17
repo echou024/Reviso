@@ -1,24 +1,36 @@
+"use client"; // Add this directive at the top
+
 import { Box, Typography, Button, AppBar, Toolbar, Grid } from '@mui/material';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import getStripe from '../utils/get-stripe';
+import { useState } from 'react';
 
 export default function HomePage() {
-  const handleCheckout = async () => {
-    const checkoutSession = await fetch('/api/checkout_sessions', {
-      method: 'POST',
-      headers: { origin: 'http://localhost:3000' }, // Adjust based on your environment
-    });
-    
-    const checkoutSessionJson = await checkoutSession.json();
-    const stripe = await getStripe();
-    
-    const { error } = await stripe.redirectToCheckout({
-      sessionId: checkoutSessionJson.id,
-    });
+  const [loading, setLoading] = useState(false);
 
-    if (error) {
-      console.warn(error.message);
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      const checkoutSession = await fetch('/api/checkout_sessions', {
+        method: 'POST',
+        headers: { origin: 'http://localhost:3000' }, // Adjust based on your environment
+      });
+
+      const checkoutSessionJson = await checkoutSession.json();
+      const stripe = await getStripe();
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: checkoutSessionJson.id,
+      });
+
+      if (error) {
+        console.warn(error.message);
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,10 +68,10 @@ export default function HomePage() {
           variant="contained"
           color="primary"
           sx={{ mt: 2, mr: 2 }}
-          component={Link}
-          href="/generate"
+          onClick={handleCheckout}
+          disabled={loading}
         >
-          Get Started
+          {loading ? "Processing..." : "Get Started"}
         </Button>
         <Button variant="outlined" color="primary" sx={{ mt: 2 }}>
           Learn More
@@ -109,8 +121,9 @@ export default function HomePage() {
               color="primary"
               sx={{ mt: 2 }}
               onClick={handleCheckout}
+              disabled={loading}
             >
-              Choose Pro
+              {loading ? "Processing..." : "Choose Pro"}
             </Button>
           </Grid>
         </Grid>
@@ -118,3 +131,4 @@ export default function HomePage() {
     </div>
   );
 }
+
