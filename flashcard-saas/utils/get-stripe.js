@@ -4,7 +4,7 @@ let stripePromise;
 
 const getStripe = () => {
   if (!stripePromise) {
-    stripePromise = loadStripe(pk_test_51PoftH09JncIcYUGTzF7ItYmoWDqc4fVgfMPejnmBKJilnsMaa2kMUujQVlneYGk6bHCBrX8ZXeCCA7K92AIKSHL00NsuSFz3Q);
+    stripePromise = loadStripe();
   }
   return stripePromise;
 };

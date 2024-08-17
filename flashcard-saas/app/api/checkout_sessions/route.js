@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe("sk_test_51PoftH09JncIcYUGFntScZWyKU33moUi6V8OBcoP49ilIM1Ow09gbHWoeHbdp5BW41D1FTW8pyNujCDZl9SXWG2X003Cvf8xq3", {
+const stripe = new Stripe("", {
   apiVersion: '2022-11-15',
 });
 
