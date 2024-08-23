@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "ai-flashcard-saas-4f0db.firebaseapp.com",
   projectId: "ai-flashcard-saas-4f0db",
   storageBucket: "ai-flashcard-saas-4f0db.appspot.com",

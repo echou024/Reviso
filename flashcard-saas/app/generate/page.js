@@ -1,11 +1,17 @@
 'use client'
 
-import { useState } from 'react';
-import { Container, TextField, Button, Typography, Box, Grid, Card, CardContent } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Container, TextField, Button, Typography, Box, Grid, Card, CardContent,CircularProgress  } from '@mui/material';
+import FlashCard from './flashcard';
 
 export default function Generate() {
+  console.log('GeneratePage component rendered');
+
   const [text, setText] = useState('');
   const [flashcards, setFlashcards] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -13,27 +19,44 @@ export default function Generate() {
       return;
     }
 
+    setError('');
+    setLoading(true);
+    setSuccess(false);
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
-        body: text,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
       });
 
+
       if (!response.ok) {
-        throw new Error('Failed to generate flashcards');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      setFlashcards(data);
+      console.log('Received data:', data);
+      setFlashcards(data.flashcards);
+      console.log('Flashcards set:', data.flashcards);
+
     } catch (error) {
-      alert('An error occurred while generating flashcards. Please try again.');
+      console.error('Error generating flashcards:', error);
+      setError('An error occurred while generating flashcards. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
-
+  useEffect(() => {
+    console.log('Flashcards state updated:', flashcards);
+  }, [flashcards]);
+  
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant="h4" component="h1" gutterBottom sx={{color:'pink'}}>
           Generate Flashcards
         </Typography>
         <TextField
@@ -44,32 +67,76 @@ export default function Generate() {
           multiline
           rows={4}
           variant="outlined"
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'pink',
+              },
+              '&:hover fieldset': {
+                borderColor: 'pink',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'pink',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'pink',
+              '&.Mui-focused': {
+                color: 'pink',
+              },
+            },
+            '& .MuiInputBase-input': {
+              color: 'pink',
+            },
+          }}
+          InputProps={{
+            sx: {
+              '&::placeholder': {
+                color: 'pink',
+              },
+            },
+          }}
+          
         />
-        <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth>
-          Generate Flashcards
+        <Button variant="outlined"
+          onClick={handleSubmit}
+          fullWidth
+          disabled={loading}
+          sx={{
+            mt: 2,
+            color: 'pink',
+            borderColor: 'pink',
+            '&:hover': {
+              borderColor: 'pink',
+              backgroundColor: 'rgba(255, 192, 203, 0.04)',
+            },
+            '&:disabled': {
+              borderColor: 'rgba(255, 192, 203, 0.5)',
+              color: 'rgba(255, 192, 203, 0.5)',
+            },
+          }} >
+        {loading ? <CircularProgress size={24} /> : 'Generate Flashcards'}
         </Button>
-      </Box>
-      {flashcards.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" component="h2" gutterBottom>
-            Generated Flashcards
+      {error && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            {error}
           </Typography>
-          <Grid container spacing={2}>
-            {flashcards.map((flashcard, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6">Front:</Typography>
-                    <Typography>{flashcard.front}</Typography>
-                    <Typography variant="h6" sx={{ mt: 2 }}>Back:</Typography>
-                    <Typography>{flashcard.back}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+        )}
+         </Box>
+         {flashcards.length > 0 && (
+        <Box sx={{ mt: 4 }}>
+        <Typography variant="h5" component="h2" gutterBottom sx={{color:'pink'}}>
+          Generated Flashcards: 
+        </Typography>
+        <Grid container spacing={2}>
+          {flashcards.map((flashcard, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <FlashCard front={flashcard.front} back={flashcard.back} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
       )}
     </Container>
   );

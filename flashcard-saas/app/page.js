@@ -1,13 +1,20 @@
 "use client"; // Add this directive at the top
-
-import { Box, Typography, Button, AppBar, Toolbar, Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Box, Typography, Button, AppBar, Toolbar, Grid, Divider } from '@mui/material';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import getStripe from '../utils/get-stripe';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 
 export default function HomePage() {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const TextButton = styled(Button)({
+    color: '#494646',
+  });
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -34,21 +41,29 @@ export default function HomePage() {
     }
   };
 
+  const handleChooseFree = () => {
+    setLoading(true);
+    router.push('/generate');
+  };
+
+
+  
+
   return (
     <div>
       {/* Header and Navigation */}
-      <AppBar position="static">
+      <AppBar position="static" sx={{backgroundColor:'pink'}}>
         <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
-            Flashcard SaaS
+          <Typography variant="h6" style={{ flexGrow: 1, color:"#494646"}}>
+            Reviso
           </Typography>
           <SignedOut>
-            <Button color="inherit" component={Link} href="/sign-in">
-              Login
-            </Button>
-            <Button color="inherit" component={Link} href="/sign-up">
+            <TextButton color="inherit" component={Link} href="/sign-in">
+              Log In
+            </TextButton>
+            <TextButton color="inherit" component={Link} href="/sign-up">
               Sign Up
-            </Button>
+            </TextButton>
           </SignedOut>
           <SignedIn>
             <UserButton />
@@ -57,78 +72,125 @@ export default function HomePage() {
       </AppBar>
 
       {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', my: 4 }}>
+      <Box sx={{ textAlign: 'center', my: 6 , color:'pink'}}>
         <Typography variant="h2" component="h1" gutterBottom>
-          Welcome to Flashcard SaaS
+          Welcome to Reviso 
         </Typography>
         <Typography variant="h5" component="h2" gutterBottom>
-          The easiest way to create flashcards from your text.
+          Learn Smarter.
         </Typography>
         <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, mr: 2 }}
-          onClick={handleCheckout}
-          disabled={loading}
+          variant="outlined"
+          sx={{ mt: 2, mr: 2 , color:'pink', borderColor:'pink',
+          '&:hover': {
+            borderColor: 'pink',
+            backgroundColor: 'rgba(255, 192, 203, 0.04)', // light pink background on hover
+          },
+          '&:disabled': {
+            borderColor: 'rgba(255, 192, 203, 0.5)', // faded pink when disabled
+            color: 'rgba(255, 192, 203, 0.5)',
+          },}}
+          component={Link} href="/sign-up"
         >
-          {loading ? "Processing..." : "Get Started"}
-        </Button>
-        <Button variant="outlined" color="primary" sx={{ mt: 2 }}>
-          Learn More
+          Get started
         </Button>
       </Box>
-
       {/* Features Section */}
-      <Box sx={{ my: 6 }}>
+      <Box sx={{ my: 10,  textAlign: 'center' , color:'pink', 
+        border: '1px solid pink',
+        padding: 4, // Add some padding
+        borderRadius: 2, // Rounded corners
+        justifyContent: 'center',
+        margin: '0 auto', // Center the box horizontally and add vertical margin
+        maxWidth: '80%', // Limit the width of the box
+        }}>
         <Typography variant="h4" component="h2" gutterBottom>
-          Features
+          About Reviso
         </Typography>
-        <Grid container spacing={4}>
+        <Grid container justifyContent="center">
           {/* Feature items */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Feature 1</Typography>
-            <Typography>Describe feature 1 here.</Typography>
+          <Grid item xs={12} md={8} lg={10} sx={{textAlign: 'center' , color:'pink'}}>
+            <Typography variant="h6">Customizable Flashcard Generation</Typography>
+            <Typography sx={{fontSize: '1.25rem', my:3 ,}}>Users can input their prompts or text, and the AI will generate flashcards with key questions and answers based on the content. </Typography>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Feature 2</Typography>
-            <Typography>Describe feature 2 here.</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Feature 3</Typography>
-            <Typography>Describe feature 3 here.</Typography>
-          </Grid>
+      
         </Grid>
       </Box>
 
       {/* Pricing Section */}
-      <Box sx={{ my: 6, textAlign: 'center' }}>
-        <Typography variant="h4" component="h2" gutterBottom>
-          Pricing
-        </Typography>
-        <Grid container spacing={4} justifyContent="center">
-          {/* Pricing plans */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Free Plan</Typography>
-            <Typography>$0 / month</Typography>
-            <Typography>Basic features for individual users.</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6">Pro Plan</Typography>
-            <Typography>$10 / month</Typography>
-            <Typography>Advanced features for professionals.</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ mt: 2 }}
-              onClick={handleCheckout}
-              disabled={loading}
-            >
-              {loading ? "Processing..." : "Choose Pro"}
-            </Button>
-          </Grid>
-        </Grid>
+      {/* Pricing Section */}
+<Box sx={{ my: 6, textAlign: 'center', color: 'pink' }}>
+  <Typography variant="h4" component="h2" gutterBottom>
+    Pricing
+  </Typography>
+  <Grid container spacing={0} justifyContent="center" alignItems="stretch" sx={{my:4}}>
+    {/* Free Plan */}
+    <Grid item xs={12} md={5} sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <Box>
+        <Typography variant="h6">Free Plan</Typography>
+        <Typography variant="h5" sx={{ my: 2 }}>$0 / month</Typography>
+        <Typography>Basic features for individual users.</Typography>
       </Box>
-    </div>
+      <Button
+        variant="outlined"
+        sx={{
+          mt: 2,
+          color: 'pink',
+          borderColor: 'pink',
+          '&:hover': {
+            borderColor: 'pink',
+            backgroundColor: 'rgba(255, 192, 203, 0.04)',
+          },
+          '&:disabled': {
+            borderColor: 'rgba(255, 192, 203, 0.5)',
+            color: 'rgba(255, 192, 203, 0.5)',
+          },
+        }}
+        onClick={handleChooseFree}
+        disabled={loading}
+      >
+        {loading ? "One Moment..." : "Choose Free"}
+      </Button>
+    </Grid>
+
+    {/* Vertical Divider */}
+    <Divider orientation="vertical" flexItem sx={{ 
+      display: { xs: 'none', md: 'block' },
+      borderColor: 'pink',
+      borderRightWidth: 1,
+    }} />
+
+    {/* Pro Plan */}
+    <Grid item xs={12} md={5} sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <Box>
+        <Typography variant="h6">Pro Plan</Typography>
+        <Typography variant="h5" sx={{ my: 2 }}>$10 / month</Typography>
+        <Typography>Users are allowed to upload their documents and generate flashcards from the content of PDF and Word files.</Typography>
+      </Box>
+      <Button
+        variant="outlined"
+        sx={{
+          mt: 2,
+          color: 'pink',
+          borderColor: 'pink',
+          '&:hover': {
+            borderColor: 'pink',
+            backgroundColor: 'rgba(255, 192, 203, 0.04)',
+          },
+          '&:disabled': {
+            borderColor: 'rgba(255, 192, 203, 0.5)',
+            color: 'rgba(255, 192, 203, 0.5)',
+          },
+        }}
+        onClick={handleCheckout}
+        disabled={loading}
+      >
+        {loading ? "Processing..." : "Choose Pro"}
+      </Button>
+    </Grid>
+  </Grid>
+</Box>
+  </div>
   );
 }
 
