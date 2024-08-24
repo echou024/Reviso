@@ -2,14 +2,26 @@
 
 import React from 'react';
 import { Container, Box, Typography, AppBar, Toolbar } from '@mui/material';
-import { SignIn } from '@clerk/nextjs';
+import { SignIn, useAuth } from '@clerk/nextjs';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {
+  const { isSignedIn } = useAuth(); // Get the authentication status
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      // If already signed in, redirect to the desired page
+      router.push('/generate');
+    }
+  }, [isSignedIn, router]);
+
   return (
     <div style={{ backgroundColor: '#073B73', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Navigation Bar */}
       <AppBar position="static" sx={{ backgroundColor: '#073B73', boxShadow: 'none', width: '100%' }}>
-        <Toolbar sx={{ justifyContent: 'center', padding: 0, paddingTop: 4 }}> {/* Added paddingTop for spacing */}
+        <Toolbar sx={{ justifyContent: 'center', padding: 0, paddingTop: 4 }}>
           <Box
             sx={{
               backgroundColor: '#79c9fa',
