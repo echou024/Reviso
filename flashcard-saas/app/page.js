@@ -82,7 +82,7 @@ export default function HomePage() {
             <Typography variant="h6">Revisit previous flashcard decks</Typography>
           </Box>
           <Box sx={{ backgroundColor: '#f974a6', height: '300px', width: '100%', borderRadius: 4, mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="h6">Go PRO to upload PDFs and images</Typography>
+            <Typography variant="h6">Coming soon: Upload PDFs and images</Typography>
           </Box>
         </Grid>
       </Grid>
