@@ -189,12 +189,6 @@ export default function Generate() {
             />
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
-              <Box sx={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/assets/icon1.png" alt="icon1" style={{ width: 24, height: 24 }} />
-              </Box>
-              <Box sx={{ width: 50, height: 50, backgroundColor: 'white', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/assets/icon2.png" alt="icon2" style={{ width: 24, height: 24 }} />
-              </Box>
               <Button
                 variant="contained"
                 onClick={handleSubmit}
