@@ -1,24 +1,26 @@
 "use client";
 
 import React from 'react';
-import { Container, Box, Typography, AppBar, Toolbar, Button } from '@mui/material';
+import { Container, Box, Typography, AppBar, Toolbar } from '@mui/material';
 import { SignIn } from '@clerk/nextjs';
-import Link from 'next/link';
 
 export default function SignInPage() {
   return (
-    <div>
+    <div style={{ backgroundColor: '#073B73', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Navigation Bar */}
-      <AppBar position="static" sx={{ backgroundColor: 'pink'  }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1, color:' #494646' }}>
-            Reviso
-          </Typography>
-          <Button color="inherit">
-            <Link href="/sign-up" passHref>
-              Sign Up
-            </Link>
-          </Button>
+      <AppBar position="static" sx={{ backgroundColor: '#073B73', boxShadow: 'none', width: '100%' }}>
+        <Toolbar sx={{ justifyContent: 'center', padding: 0, paddingTop: 4 }}> {/* Added paddingTop for spacing */}
+          <Box
+            sx={{
+              backgroundColor: '#79c9fa',
+              padding: '10px 30px',
+              borderRadius: '8px',
+            }}
+          >
+            <Typography variant="h4" component="h1" color="white" sx={{ letterSpacing: '0.3rem' }}>
+              LOG IN
+            </Typography>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -31,12 +33,12 @@ export default function SignInPage() {
           alignItems="center"
           sx={{ textAlign: 'center', my: 4 }}
         >
-          <Typography variant="h4" component="h1" gutterBottom color="pink">
-            Sign In
-          </Typography>
           <SignIn />
         </Box>
       </Container>
     </div>
   );
 }
+
+
+
