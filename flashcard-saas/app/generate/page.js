@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, CircularProgress, IconButton } from '@mui/material';
 import SwipeableViews from 'react-swipeable-views';
 import { useRouter } from 'next/navigation';
@@ -12,9 +12,11 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 export default function Generate() {
   const [text, setText] = useState('');
   const [flashcards, setFlashcards] = useState([]);
+  const [decks, setDecks] = useState(() => JSON.parse(localStorage.getItem('decks')) || []); // Load saved decks from localStorage
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [title, setTitle] = useState('Create your flashcard deck'); // Initial title
 
   const router = useRouter();
   const { signOut } = useClerk();
@@ -44,6 +46,15 @@ export default function Generate() {
       const data = await response.json();
       setFlashcards(data.flashcards);
       setCurrentIndex(0); // Reset index to the first card when new cards are generated
+
+      const newDeck = {
+        title: text, // Use the entered text as the title
+        flashcards: data.flashcards,
+      };
+      const updatedDecks = [newDeck, ...decks];
+      setDecks(updatedDecks);
+      localStorage.setItem('decks', JSON.stringify(updatedDecks)); // Save to localStorage
+
     } catch (error) {
       setError('An error occurred while generating flashcards. Please try again.');
     } finally {
@@ -72,26 +83,40 @@ export default function Generate() {
     }
   };
 
+  const loadDeck = (index) => {
+    const selectedDeck = decks[index];
+    setTitle(selectedDeck.title);
+    setFlashcards(selectedDeck.flashcards);
+    setCurrentIndex(0); // Reset index to the first card
+  };
+
+  const handleTextChange = (e) => {
+    setText(e.target.value);
+    setTitle(e.target.value || 'NERVOUS SYSTEM'); // Update the title dynamically based on input
+  };
+
   return (
     <Box sx={{ display: 'flex', height: '100vh', padding: 0, overflow: 'hidden' }}>
       {/* Sidebar */}
       <Box sx={{ width: '20%', backgroundColor: '#79c9fa', p: 3 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <img src="/assets/rocket-logo.png" alt="Reviso Logo" style={{ height: 150 }} /> {/* Increased logo size */}
+          <img src="/assets/rocket-logo.png" alt="Reviso Logo" style={{ height: 150 }} />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, paddingTop: '2rem' }}>
-          {['Nervous system', 'Roman empire', 'DMV test prep', 'Spanish verbs'].map((item, index) => (
+          {decks.map((deck, index) => (
             <Typography 
               key={index} 
               sx={{ 
-                color: index === 0 ? '#f974a6' : 'white', 
+                color: 'white', 
                 fontWeight: 'bold', 
                 fontSize: '1.25rem',
                 textAlign: 'left', 
                 paddingLeft: '1rem', 
+                cursor: 'pointer',
               }}
+              onClick={() => loadDeck(index)}
             >
-              {item}
+              {deck.title}
             </Typography>
           ))}
         </Box>
@@ -120,13 +145,13 @@ export default function Generate() {
 
         <Box sx={{ width: '100%', maxWidth: '800px', zIndex: 1000, backgroundColor: '#073B73', paddingBottom: '1rem', position: 'relative' }}>
           <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#f974a6', textAlign: 'left', letterSpacing: '0.3rem', mb: 3, fontWeight: 'bold' }}>
-            NERVOUS SYSTEM
+            {title}
           </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, width: '100%' }}>
             <TextField
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={handleTextChange}
               placeholder="Enter text"
               fullWidth
               variant="outlined"
@@ -255,6 +280,7 @@ export default function Generate() {
     </Box>
   );
 }
+
 
 
 
