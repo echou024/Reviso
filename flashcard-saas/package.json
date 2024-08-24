@@ -22,6 +22,7 @@
     "openai": "^4.56.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-swipeable-views": "^0.14.0",
     "stripe": "^16.8.0"
   },
   "devDependencies": {

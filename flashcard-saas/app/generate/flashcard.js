@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 
-const FlashCard = ({ front, back }) => {
+const FlashCard = ({ front, back, color }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleClick = () => {
@@ -39,10 +39,13 @@ const FlashCard = ({ front, back }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            backgroundColor: color, // Set background color based on prop
           }}
         >
           <CardContent>
-            <Typography variant="body1">{front}</Typography>
+            <Typography variant="body1" sx={{ color: 'white', fontSize: '1rem', textAlign: 'center' }}>
+              {front}
+            </Typography>
           </CardContent>
         </Card>
         <Card
@@ -55,10 +58,13 @@ const FlashCard = ({ front, back }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            backgroundColor: color, // Set background color based on prop
           }}
         >
           <CardContent>
-            <Typography variant="body1">{back}</Typography>
+            <Typography variant="body1" sx={{ color: 'white', fontSize: '1rem', textAlign: 'center' }}>
+              {back}
+            </Typography>
           </CardContent>
         </Card>
       </Box>
@@ -67,3 +73,5 @@ const FlashCard = ({ front, back }) => {
 };
 
 export default FlashCard;
+
+
