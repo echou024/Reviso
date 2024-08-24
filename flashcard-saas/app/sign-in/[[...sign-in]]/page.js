@@ -33,7 +33,7 @@ export default function SignInPage() {
           alignItems="center"
           sx={{ textAlign: 'center', my: 4 }}
         >
-          <SignIn />
+          <SignIn afterSignInUrl="/generate" />
         </Box>
       </Container>
     </div>

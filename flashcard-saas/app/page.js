@@ -1,17 +1,15 @@
 "use client"; // Add this directive at the top
 import { styled } from '@mui/material/styles';
 import { Box, Typography, Button, AppBar, Toolbar, Grid } from '@mui/material';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
-import Link from 'next/link';
-import getStripe from '../utils/get-stripe';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs'; // Import Clerk's useAuth to handle sign-out
 
 export default function HomePage() {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { signOut } = useAuth(); // Get the signOut function
 
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
+    await signOut(); // Force sign-out to ensure the user is redirected to the sign-in page
     router.push('/sign-in');
   };
 
@@ -91,9 +89,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
-
-
-
-
