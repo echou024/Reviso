@@ -17,6 +17,7 @@ export default function Generate() {
   const [error, setError] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [title, setTitle] = useState('Create your flashcard deck'); // Initial title
+  const [selectedDeckIndex, setSelectedDeckIndex] = useState(null); // Track the selected deck index
 
   const router = useRouter();
   const { signOut } = useClerk();
@@ -54,6 +55,7 @@ export default function Generate() {
       const updatedDecks = [newDeck, ...decks];
       setDecks(updatedDecks);
       localStorage.setItem('decks', JSON.stringify(updatedDecks)); // Save to localStorage
+      setSelectedDeckIndex(0); // Select the new deck
 
     } catch (error) {
       setError('An error occurred while generating flashcards. Please try again.');
@@ -88,6 +90,7 @@ export default function Generate() {
     setTitle(selectedDeck.title);
     setFlashcards(selectedDeck.flashcards);
     setCurrentIndex(0); // Reset index to the first card
+    setSelectedDeckIndex(index); // Update the selected deck index
   };
 
   const handleTextChange = (e) => {
@@ -107,7 +110,7 @@ export default function Generate() {
             <Typography 
               key={index} 
               sx={{ 
-                color: 'white', 
+                color: selectedDeckIndex === index ? '#f974a6' : 'white', // Highlight selected deck
                 fontWeight: 'bold', 
                 fontSize: '1.25rem',
                 textAlign: 'left', 
