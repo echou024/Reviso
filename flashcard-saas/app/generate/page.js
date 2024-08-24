@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Container, TextField, Button, Typography, Box, CircularProgress, IconButton } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, CircularProgress, IconButton, Switch } from '@mui/material';
 import SwipeableViews from 'react-swipeable-views';
 import { useRouter } from 'next/navigation';
 import { useClerk } from '@clerk/nextjs';
@@ -12,12 +12,13 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 export default function Generate() {
   const [text, setText] = useState('');
   const [flashcards, setFlashcards] = useState([]);
-  const [decks, setDecks] = useState(() => JSON.parse(localStorage.getItem('decks')) || []); // Load saved decks from localStorage
+  const [decks, setDecks] = useState(() => JSON.parse(localStorage.getItem('decks')) || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [title, setTitle] = useState('Create your flashcard deck'); // Initial title
-  const [selectedDeckIndex, setSelectedDeckIndex] = useState(null); // Track the selected deck index
+  const [title, setTitle] = useState('Create your flashcard deck');
+  const [selectedDeckIndex, setSelectedDeckIndex] = useState(null);
+  const [viewMode, setViewMode] = useState('single'); // 'single' for single card view, 'grid' for grid view
 
   const router = useRouter();
   const { signOut } = useClerk();
@@ -46,16 +47,16 @@ export default function Generate() {
 
       const data = await response.json();
       setFlashcards(data.flashcards);
-      setCurrentIndex(0); // Reset index to the first card when new cards are generated
+      setCurrentIndex(0);
 
       const newDeck = {
-        title: text, // Use the entered text as the title
+        title: text,
         flashcards: data.flashcards,
       };
       const updatedDecks = [newDeck, ...decks];
       setDecks(updatedDecks);
-      localStorage.setItem('decks', JSON.stringify(updatedDecks)); // Save to localStorage
-      setSelectedDeckIndex(0); // Select the new deck
+      localStorage.setItem('decks', JSON.stringify(updatedDecks));
+      setSelectedDeckIndex(0);
 
     } catch (error) {
       setError('An error occurred while generating flashcards. Please try again.');
@@ -89,13 +90,17 @@ export default function Generate() {
     const selectedDeck = decks[index];
     setTitle(selectedDeck.title);
     setFlashcards(selectedDeck.flashcards);
-    setCurrentIndex(0); // Reset index to the first card
-    setSelectedDeckIndex(index); // Update the selected deck index
+    setCurrentIndex(0);
+    setSelectedDeckIndex(index);
   };
 
   const handleTextChange = (e) => {
     setText(e.target.value);
-    setTitle(e.target.value || 'NERVOUS SYSTEM'); // Update the title dynamically based on input
+    setTitle(e.target.value || 'Create your flashcard deck');
+  };
+
+  const toggleViewMode = () => {
+    setViewMode((prevMode) => (prevMode === 'single' ? 'grid' : 'single'));
   };
 
   return (
@@ -110,7 +115,7 @@ export default function Generate() {
             <Typography 
               key={index} 
               sx={{ 
-                color: selectedDeckIndex === index ? '#f974a6' : 'white', // Highlight selected deck
+                color: selectedDeckIndex === index ? '#f974a6' : 'white',
                 fontWeight: 'bold', 
                 fontSize: '1.25rem',
                 textAlign: 'left', 
@@ -209,6 +214,12 @@ export default function Generate() {
               </Button>
             </Box>
           </Box>
+
+          {/* Toggle View Mode */}
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Typography sx={{ color: 'white', mr: 2 }}>Grid View</Typography>
+            <Switch checked={viewMode === 'grid'} onChange={toggleViewMode} />
+          </Box>
         </Box>
 
         {error && (
@@ -217,12 +228,12 @@ export default function Generate() {
           </Typography>
         )}
 
-        <Box sx={{ flex: 1, overflowY: 'auto', zIndex: 1, paddingTop: '1rem', width: '100%', maxWidth: '600px', position: 'relative', textAlign: 'center' }}>
-          {flashcards.length > 0 && (
+        <Box sx={{ flex: 1, overflowY: 'auto', zIndex: 1, paddingTop: '1rem', width: '100%', position: 'relative', textAlign: 'center' }}>
+          {flashcards.length > 0 && viewMode === 'single' && (
             <>
               <SwipeableViews index={currentIndex} onChangeIndex={handleChangeIndex}>
                 {flashcards.map((flashcard, index) => (
-                  <Box key={index} sx={{ padding: '0 1rem' }}>
+                  <Box key={index} sx={{ maxWidth: '500px', margin: '0 auto', padding: '0 1rem' }}>
                     <FlashCard 
                       front={flashcard.front} 
                       back={flashcard.back} 
@@ -233,53 +244,37 @@ export default function Generate() {
               </SwipeableViews>
 
               {/* Counter */}
-              <Typography variant="body1" sx={{ mt: 2, color: 'white', fontWeight: 'bold' }}>
+              <Typography sx={{ color: 'white', mt: 2, fontWeight: 'bold' }}>
                 {currentIndex + 1} / {flashcards.length}
               </Typography>
-              
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  left: 'calc(50% - 100px)', 
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  backgroundColor: 'white',
-                  '&:hover': {
-                    backgroundColor: '#f974a6',
-                  },
-                }}
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-              >
-                <ArrowBackIosIcon />
-              </IconButton>
 
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  right: 'calc(50% - 100px)', 
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  backgroundColor: 'white',
-                  '&:hover': {
-                    backgroundColor: '#f974a6',
-                  },
-                }}
-                onClick={handleNext}
-                disabled={currentIndex === flashcards.length - 1}
-              >
-                <ArrowForwardIosIcon />
-              </IconButton>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+                <IconButton onClick={handlePrev} disabled={currentIndex === 0}>
+                  <ArrowBackIosIcon sx={{ color: 'white' }} />
+                </IconButton>
+                <IconButton onClick={handleNext} disabled={currentIndex === flashcards.length - 1}>
+                  <ArrowForwardIosIcon sx={{ color: 'white' }} />
+                </IconButton>
+              </Box>
             </>
+          )}
+
+          {flashcards.length > 0 && viewMode === 'grid' && (
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', padding: '1rem' }}>
+              {flashcards.map((flashcard, index) => (
+                <Box key={index} sx={{ borderRadius: '8px', padding: '1.5rem', backgroundColor: '#073B73' }}>
+                  <FlashCard 
+                    front={flashcard.front} 
+                    back={flashcard.back} 
+                    color={index % 2 === 0 ? '#f974a6' : '#ffa5c6'}
+                  />
+                </Box>
+              ))}
+            </Box>
           )}
         </Box>
       </Box>
     </Box>
   );
 }
-
-
-
-
-
 
