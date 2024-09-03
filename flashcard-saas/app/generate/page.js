@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, CircularProgress, IconButton, Switch } from '@mui/material';
-import SwipeableViews from 'react-swipeable-views';
 import { useRouter } from 'next/navigation';
 import { useClerk } from '@clerk/nextjs';
 import FlashCard from './flashcard';
@@ -12,7 +11,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 export default function Generate() {
   const [text, setText] = useState('');
   const [flashcards, setFlashcards] = useState([]);
-  const [decks, setDecks] = useState(() => JSON.parse(localStorage.getItem('decks')) || []);
+  const [decks, setDecks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -22,6 +21,11 @@ export default function Generate() {
 
   const router = useRouter();
   const { signOut } = useClerk();
+
+  useEffect(() => {
+    const storedDecks = JSON.parse(localStorage.getItem('decks')) || [];
+    setDecks(storedDecks);
+  }, []);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -68,10 +72,6 @@ export default function Generate() {
   const handleSignOut = async () => {
     await signOut();
     router.push('/sign-in');
-  };
-
-  const handleChangeIndex = (index) => {
-    setCurrentIndex(index);
   };
 
   const handlePrev = () => {
@@ -231,17 +231,13 @@ export default function Generate() {
         <Box sx={{ flex: 1, overflowY: 'auto', zIndex: 1, paddingTop: '1rem', width: '100%', position: 'relative', textAlign: 'center' }}>
           {flashcards.length > 0 && viewMode === 'single' && (
             <>
-              <SwipeableViews index={currentIndex} onChangeIndex={handleChangeIndex}>
-                {flashcards.map((flashcard, index) => (
-                  <Box key={index} sx={{ maxWidth: '500px', margin: '0 auto', padding: '0 1rem' }}>
-                    <FlashCard 
-                      front={flashcard.front} 
-                      back={flashcard.back} 
-                      color={index % 2 === 0 ? '#f974a6' : '#ffa5c6'} 
-                    />
-                  </Box>
-                ))}
-              </SwipeableViews>
+              <Box sx={{ maxWidth: '500px', margin: '0 auto', padding: '0 1rem' }}>
+                <FlashCard 
+                  front={flashcards[currentIndex].front} 
+                  back={flashcards[currentIndex].back} 
+                  color={currentIndex % 2 === 0 ? '#f974a6' : '#ffa5c6'} 
+                />
+              </Box>
 
               {/* Counter */}
               <Typography sx={{ color: 'white', mt: 2, fontWeight: 'bold' }}>
@@ -277,4 +273,3 @@ export default function Generate() {
     </Box>
   );
 }
-

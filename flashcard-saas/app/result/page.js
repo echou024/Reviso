@@ -1,13 +1,14 @@
-"use client";
-import { useEffect, useState } from 'react';
+'use client';
+
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Container, Typography, CircularProgress, Box } from '@mui/material';
 
-const ResultPage = () => {
+const ResultContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const session_id = searchParams.get('session_id');
-  
+
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
   const [error, setError] = useState(null);
@@ -84,4 +85,13 @@ const ResultPage = () => {
   );
 };
 
+const ResultPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResultContent />
+    </Suspense>
+  );
+};
+
 export default ResultPage;
+
